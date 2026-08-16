@@ -1,4 +1,16 @@
 services:
+  client:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+      target: runner
+    container_name: todo_client
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./frontend/.env
+    restart: unless-stopped
+
   app:
     build:
       context: ./backend/
