@@ -20,13 +20,13 @@ env:
 
 jobs:
   build-push:
-    if: github.event_name = 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
     steps:
-      - uses: action/checkout@v7
+      - uses: actions/checkout@v7
 
       - name: Authenticate to aws (OIDC)
         uses: aws-actions/configure-aws-credentials@v6
