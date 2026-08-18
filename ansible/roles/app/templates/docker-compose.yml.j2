@@ -4,8 +4,6 @@ services:
         container_name: todo_frontend
         ports:
             - "80:80"
-        environment:
-            VITE_API_BASE_URL: "{{ frontend_api_url }}"
         restart: always
 
     backend:

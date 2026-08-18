@@ -10,8 +10,6 @@ ecr_registry: "{{ lookup('env', 'ECR_REGISTRY') }}"
 backend_image: "{{ ecr_registry }}/todo-app-{{ env_name }}-backend:{{ image_tag }}"
 frontend_image: "{{ ecr_registry }}/todo-app-{{ env_name }}-frontend:{{ image_tag }}"
 
-frontend_api_url: "{{ lookup('env', 'BASE_API_URL') | default('http://localhost:3000/api', true)}}"
-
 postgres_image: postgres:17-alpine
 
 db_name: todo_db
