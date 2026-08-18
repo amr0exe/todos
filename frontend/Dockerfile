@@ -10,6 +10,9 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store pnpm i --frozen-lock
 
 COPY . .
 
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 RUN pnpm build
 
 
@@ -21,7 +24,7 @@ COPY --chown=nginx:nginx --from=builder /app/dist /usr/share/nginx/html
 
 USER nginx
 
-EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf"]
 CMD ["-g", "daemon off;"]
