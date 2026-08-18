@@ -1,0 +1,30 @@
+---
+- name: get ecr auth token
+  ansible.builtin.command: /snap/bin/aws ecr get-login-password --region {{ aws_region }}
+  register: ecr_token
+  changed_when: false
+  no_log: true
+
+- name: log into to ecr
+  community.docker.docker_login:
+    registry_url: "{{ ecr_registry }}"
+    username: AWS
+    password: "{{ ecr_token.stdout }}"
+
+- name: create app directory
+  ansible.builtin.file:
+    path: /opt/app
+    state: directory
+    mode: "0755"
+
+- name: template compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: /opt/app/docker-compose.yml
+    mode: "0644"
+
+- name: deploy app containers
+  community.docker.docker_compose_v2:
+    project_src: /opt/app
+    pull: always
+    state: present

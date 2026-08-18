@@ -1,3 +1,17 @@
 ---
+env_name: "{{ lookup('env', 'ENV_NAME') | default('dev', true) }}"
+aws_region: "{{ lookup('env', 'AWS_REGION') | default('us-east-1', true) }}"
+
 ansible_user: ubuntu
 ansible_python_interpreter: /usr/bin/python3
+
+image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest', true) }}"
+ecr_registry: "{{ lookup('env', 'ECR_REGISTRY') }}"
+backend_image: "{{ ecr_registry }}/todo-app-{{ env_name }}-backend:{{ image_tag }}"
+frontend_image: "{{ ecr_registry }}/todo-app-{{ env_name }}-frontend:{{ image_tag }}"
+
+postgres_image: postgres:17-alpine
+
+db_name: todo_db
+db_user: "{{ lookup('env', 'DB_USERNAME')}}"
+db_pwd: "{{ lookup('env', 'DB_PASSWORD')}}"

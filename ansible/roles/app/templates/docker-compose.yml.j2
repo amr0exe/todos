@@ -1,0 +1,43 @@
+services:
+    frontend:
+        image: "{{ frontend_image }}"
+        container_name: todo_frontend
+        ports:
+            - "8080:8080"
+        environment:
+            VITE_API_BASE_URL: "{{ frontend_api_url }}"
+        restart: always
+
+    backend:
+       image: "{{ backend_image }}"
+       container_name: todo_backend
+       environment:
+        PORT: "3000"
+        HOST: "0.0.0.0"
+        DB_URL: "postgres://{{ db_user }}:{{ db_pwd }}@db:5432/{{ db_name }}?sslmode=disable"
+       depends_on:
+        db:
+          condition: service_healthy
+       restart: always
+
+    db:
+        image: "{{ postgres_image }}"
+        environment:
+            POSTGRES_DB: "{{ db_name }}"
+            POSTGRES_USER: "{{ db_user }}"
+            POSTGRES_PASSWORD: "{{ db_pwd }}"
+        healthcheck:
+            test:
+                - CMD-SHELL
+                - "pg_isready -U {{ db_user }} -d {{ db_name }}"
+            interval: 10s
+            retries: 5
+            start_period: 30s
+            timeout: 10s
+        restart: always
+        volumes:
+            - todo_fallback:/var/lib/postgresql/data
+
+volumes:
+    todo_fallback:
+        name: todo_fallback
