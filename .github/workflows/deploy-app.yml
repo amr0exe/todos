@@ -11,7 +11,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
   TARGET_ENV: ${{ github.event.inputs.environment || 'dev' }}
-  IMAGE_TAG: ${{ github.event.inputs.image_tag || 'latest' }}
+  IMAGE_TAG: ${{ 'latest' }}
 
 jobs:
   deploy:
@@ -52,6 +52,8 @@ jobs:
           AWS_REGION: ${{ env.AWS_REGION }}
           ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           ansible-playbook -i "inventory/${ENV_NAME}.aws_ec2.yml" site.yml \
             --private-key ../key.pem
