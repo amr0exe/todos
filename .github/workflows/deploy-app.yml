@@ -33,7 +33,7 @@ jobs:
 
       - uses: actions/setup-python@v6
         with:
-          python_version: "3.12"
+          python-version: "3.12"
 
       - name: install ansible
         run: |
@@ -48,7 +48,7 @@ jobs:
       - name: Ansible Deploy
         working-directory: ansible
         env:
-          ENV_NAME: ${{ env.TARET_ENV }}
+          ENV_NAME: ${{ env.TARGET_ENV }}
           AWS_REGION: ${{ env.AWS_REGION }}
           ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
           IMAGE_TAG: ${{ env.IMAGE_TAG }}

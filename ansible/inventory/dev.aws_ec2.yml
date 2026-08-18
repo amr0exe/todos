@@ -2,7 +2,7 @@
 # tags from ec2
 plugin: amazon.aws.aws_ec2
 filters:
-  tag:Project: todoApp
+  tag:Project: todoAPP
   tag:Env: dev
   instance-state-name: running
 hostanmes:
