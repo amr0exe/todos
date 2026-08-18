@@ -1,0 +1,57 @@
+name: Deploy App
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+  TARGET_ENV: ${{ github.event.inputs.environment || 'dev' }}
+  IMAGE_TAG: ${{ github.event.inputs.image_tag || 'latest' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: authenticate to aws
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: resolve ecr registry
+        run: |
+          ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+          echo "ECR_REGISTRY=$ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com" >> $GITHUB_ENV
+
+      - uses: actions/setup-python@v6
+        with:
+          python_version: "3.12"
+
+      - name: install ansible
+        run: |
+            pip install ansible boto3 botocore
+            ansible-galaxy collection install -r ansible/requirements.yml
+
+      - name: write ssh private key
+        run: |
+          install  -m 600 /dev/null key.pem
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > key.pem
+
+      - name: Ansible Deploy
+        working-directory: ansible
+        env:
+          ENV_NAME: ${{ env.TARET_ENV }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        run: |
+          ansible-playbook -i "inventory/${ENV_NAME}.aws_ec2.yml" site.yml \
+            --private-key ../key.pem
