@@ -1,6 +1,10 @@
 package router
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -28,6 +32,10 @@ func SetupRouter(h *TodoHandler) *gin.Engine {
 		api.POST("/todo", h.CreateTodos)
 		api.GET("/all", h.GetTodos)
 		api.DELETE("/todo/:id", h.DeleteTodos)
+
+		api.GET("/healthz", func(c *gin.Context) {
+			c.Status(http.StatusOK)
+		})
 	}
 
 	return r
