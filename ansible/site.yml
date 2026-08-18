@@ -1,0 +1,6 @@
+---
+- name: base setup (docker, aws_cli)
+  hosts: all
+  become: true
+  roles:
+    - common

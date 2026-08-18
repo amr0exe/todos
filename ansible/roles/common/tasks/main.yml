@@ -1,0 +1,20 @@
+---
+- name: Install docker, docker-compose
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose-v2
+      - python3-docker
+    state: present
+    update_cache: true
+
+- name: Ensure docker is running and enabled
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Intall aws cli
+  ansible.builtin.command: snap install aws-cli --classic
+  args:
+    creates: /snap/bin/aws

@@ -1,0 +1,19 @@
+---
+# tags from ec2
+plugin: amazon.aws.aws_ec2
+filters:
+  tag:Project: todoApp
+  tag:Env: dev
+  instance-state-name: running
+hostanmes:
+  - instance-id
+
+# currently doen't help for my one app setup. Just good practice
+keyed_groups:
+  - key: ec2_tags.Role
+    prefix: ""
+    separator: ""
+# public_ip is what we really need. again. private_ip helps in internal communication between apps
+compose:
+  ansible_host: public_ip_address
+  private_ip: private_ip_address
